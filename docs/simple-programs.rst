@@ -270,7 +270,7 @@ Note: All functions are automatically `memoized <http://en.wikipedia.org/wiki/Me
 The recursive factorial is a common solution. It works by taking the factorial of the number lower than it, recursively, until you get to zero, which returns 1. Let's first define our factorial function's base case of zero::
 
     ==================== 5 chars =====================
-    L?Tb1
+    L?bT1
     ==================================================
     @memoized
     def subsets(b):
@@ -279,16 +279,16 @@ The recursive factorial is a common solution. It works by taking the factorial o
 
 Here I'm using ``T`` as a placeholder for the recursive case.
 
-Also, notice that the ternary operator ``?abc`` evaluates to ``a if b else c``.
+Also, notice that the ternary operator ``?abc`` evaluates to ``if a then b else c``.
 
 Now let's complete the factorial function::
 
     ==================== 9 chars =====================
-    L?*bytbb1
+    L?b*bytb1
     ==================================================
     @memoized
     def subsets(b):
-     return times(b,(subsets(tail(b)) if b else 1))
+     return (times(b,subsets(tail(b))) if b else 1)
     ==================================================
 
 This uses ``t``, the decrement function, to recursively call the function on the input minus 1.
@@ -298,21 +298,22 @@ Pretty simple. Now we have to take input and run the function::
     input: 5
 
     ==================== 11 chars ====================
-    L?*bytbb1yQ
+    L?b*bytb1yQ
     ==================================================
-    Q=copy(eval(input()))
-    @memoized
-    def subsets(b):
-     return (times(b,subsets(tail(b))) if b else 1)
-    Pprint("\n",subsets(Q))
+	assign('Q',literal_eval(input()))
+	@memoized
+	def subsets(b):
+	 return (times(b,subsets(tail(b))) if b else 1)
+	imp_print(subsets(Q))
     ==================================================
+    120
 
 Another factorial example...
 
 3.1.6. Factorials With Reduce
 -----------------------------
 
-The best way to do it, the way most people would do it, would be to use the reduce function. The ``u`` operator works exactly like Python's reduce, except for an implicit lambda so you can just write code without a lambda deceleration. All a factorial is a reduction by the product operator on the range from 1 through n. This makes it very easy. The reduce function takes a statement of code, the sequence to iterate on, and a base case::
+The best way to do it, the way most people would do it, would be to use the reduce function. The ``u`` operator works exactly like Python's reduce, except for an implicit lambda so you can just write code without a lambda declaration. All a factorial is, is a reduction by the product operator on the range from 1 through n. This makes it very easy. The reduce function takes a statement of code, the sequence to iterate on, and a base case::
 
 	input: 5
 	
@@ -329,29 +330,30 @@ As with each function in Pyth which uses an implicit lambda, reduce (``u``) has 
 However, we can do better than this. If we use the list from ``0`` to ``Q-1`` instead, but multiply by one more than the sequence variable in the reduce, we can shorten the code. ``UQ``, unary range of ``Q`` will produce the appropriate list, but ``u`` has a handy default where a number as the second variable will be treated identically to the unary range of that number. Thus, our code becomes::
 
     input: 5
-
-    ==================== 7 chars =====================
-    u*GhHQ1
+    
+    ==================== 3 chars =====================
+    .!Q
     ==================================================
-    Q=copy(eval(input()))
-    Pprint("\n",reduce(lambda G, H:times(G,head(H)),Q,1))
+    assign('Q',eval(input()))
+    imp_print(factorial(Q))
     ==================================================
     120
 
 Final way to calculate the factorial:
 
-3.1.7. Factorial With Product
+3.1.7. Factorial With Built-in
 -----------------------------
 
-Pyth has a lot of specialty functions. So many, in fact, that there are too many to write them all with single character names. To remedy this, we use the ``.`` syntax. ``.`` followed by another letter does something entirely different. ``.x`` in particular is the product function::
+Pyth has a lot of specialty functions. So many, in fact, that there are too many to write them all with single character names. To remedy this, we use the ``.`` syntax. ``.`` followed by another character does something entirely different. ``.!`` in particular is the factorial function::
 
-    ==================== 6 chars =====================
-    .xr1hQ
+    input: 5
+
+    ==================== 3 chars =====================
+    .!0
     ==================================================
-    Q=copy(eval(input()))
-    Pprint("\n",product(Prange(1,head(Q))))
+    imp_print(factorial(0))
     ==================================================
-    120
+    1
 
 3.2. The First n Fibonacci numbers
 ==================================
@@ -363,13 +365,13 @@ The `Fibonacci sequence <http://en.wikipedia.org/wiki/Fibonacci_number>`_ is ano
     ==================== 15 chars ====================
     J1VQJKZ=ZJ=J+ZK
     ==================================================
-    Q=copy(eval(input()))
-    J=copy(1)
-    for N in urange(Q):
-    Pprint("\n",J)
-    K=Z
-    Z=copy(J)
-    J=copy(plus(Z,K))
+	assign('Q',literal_eval(input()))
+	assign("J",1)
+	for N in num_to_range(Q):
+	 imp_print(J)
+	 assign("K",Z)
+	 assign('Z',J)
+	 assign('J',plus(Z,K))
     ==================================================
     1
     1
@@ -384,18 +386,18 @@ The `Fibonacci sequence <http://en.wikipedia.org/wiki/Fibonacci_number>`_ is ano
 
 Notice that we used ``Z`` as one of the variables. ``Z`` is preinitialized to ``0``, which was appropriate to use here. All of Pyth's variables have some sort of special property.
 
-That was pretty easy, but this can be shortened with the double-assignment operator, ``A``. This has an arity of 3 and takes two variable names, and then a tuple of two values. We use the ``,`` two element tuple creation operator to make the tuple::
+That was pretty easy, but this can be shortened (or should be) with the double-assignment operator, ``A``. This has an arity of 1 and takes a tuple of two values. This shortens the assignment, but in this case we have to re-assign ``H`` and ``G`` since A implicitly uses them and their defaults are ``{}`` and an alphabetical string respectively. We use the ``(`` tuple creation operator to make the tuple::
 
     input: 10
 
-    ==================== 13 chars ====================
-    J1VQJAZJ,J+ZJ
+    ==================== 14 chars ====================
+    A(Z1)VQHA(H+HG
     ==================================================
-    Q=copy(eval(input()))
-    J=copy(1)
-    for N in urange(Q):
-     Pprint("\n",J)
-     (Z,J)=copy((J,plus(Z,J)))
+	assign('Q',literal_eval(input()))
+	assign('[G,H]',Ptuple(Z,1))
+	for N in num_to_range(Q):
+	 imp_print(H)
+	 assign('[G,H]',Ptuple(H,plus(H,G)))
     ==================================================
     1
     1
